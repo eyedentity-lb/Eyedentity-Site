@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Eyedentity Store</title>
+  <style>
+    body { font-family: sans-serif; background: #F6F2E9; color: #8F6D44; padding: 2rem; }
+    .product { background: #fff; padding: 1rem; border: 1px solid #8F6D44; border-radius: 8px; margin-bottom: 2rem; max-width: 400px; margin: auto; }
+    img { width: 100%; border-radius: 6px; }
+    select, input, button { width: 100%; padding: 10px; margin-top: 0.5rem; border-radius: 5px; border: 1px solid #8F6D44; }
+    button { background: #8F6D44; color: white; }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Eyedentity</h1>
+  <div id="store"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-database-compat.js"></script>
+
+  <script>
+ const firebaseConfig = {
+  apiKey: "AIzaSyAG-3LaIOadCUWHJ4arjA7qiVDznx1LKBg",
+  authDomain: "eyedentity-b9f68.firebaseapp.com",
+  projectId: "eyedentity-b9f68",
+  storageBucket: "eyedentity-b9f68.firebasestorage.app",
+  messagingSenderId: "930044370500",
+  appId: "1:930044370500:web:8f7c5c3d6dc69e999b2611"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const store = document.getElementById('store');
+    db.ref('products').on('value', snapshot => {
+      store.innerHTML = '';
+      const products = snapshot.val();
+      for (let id in products) {
+        const p = products[id];
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <img src="${p.image}" alt="${p.name}" />
+          <h2>${p.name}</h2>
+          <p>${p.description}</p>
+          <p><strong>${p.price}</strong></p>
+          <label>Select Color:</label>
+          <select>${p.colors.map(c => `<option>${c}</option>`).join('')}</select>
+          <label>Quantity:</label>
+          <input type="number" min="1" value="1" />
+          <button onclick="alert('Thanks for purchasing ${p.name}!')">Buy Now</button>
+        `;
+        store.appendChild(div);
+      }
+    });
+  </script>
+</body>
+</html>

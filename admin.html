@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Eyedentity Admin</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #F6F2E9;
+      color: #8F6D44;
+      padding: 2rem;
+    }
+    form {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #8F6D44;
+      max-width: 500px;
+      margin: auto;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      border: 1px solid #8F6D44;
+    }
+    button {
+      background: #8F6D44;
+      color: white;
+      cursor: pointer;
+    }
+    #logoutBtn {
+      background: transparent;
+      color: #8F6D44;
+      border: 1px solid #8F6D44;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center;">Eyedentity Admin</h1>
+  <form id="productForm">
+    <input id="name" placeholder="Product Name" required>
+    <input id="price" placeholder="Price (e.g. $120)" required>
+    <input id="image" placeholder="Image URL" required>
+    <input id="colors" placeholder="Colors (comma-separated)" required>
+    <textarea id="description" placeholder="Short description" required></textarea>
+    <button type="submit">Add Product</button>
+  </form>
+  <button id="logoutBtn">Logout</button>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-auth-compat.js"></script>
+
+  <script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyAG-3LaIOadCUWHJ4arjA7qiVDznx1LKBg",
+  authDomain: "eyedentity-b9f68.firebaseapp.com",
+  projectId: "eyedentity-b9f68",
+  storageBucket: "eyedentity-b9f68.firebasestorage.app",
+  messagingSenderId: "930044370500",
+  appId: "1:930044370500:web:8f7c5c3d6dc69e999b2611"
+};;
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    // 🔒 Protect admin page — only accessible if logged in
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = "login.html"; // Not logged in? Send to login
+      }
+    });
+
+    // 🚪 Logout functionality
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      auth.signOut().then(() => {
+        window.location.href = "login.html";
+      });
+    });
+
+    // ✅ Add new product to Firebase Realtime Database
+    document.getElementById("productForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const product = {
+        name: name.value,
+        price: price.value,
+        image: image.value,
+        description: description.value,
+        colors: colors.value.split(',').map(c => c.trim())
+      };
+      db.ref("products").push(product);
+      alert("Product added!");
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
